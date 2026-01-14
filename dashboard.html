@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gold Strategy Dashboard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        .buy { color: green; font-weight: bold; }
+        .sell { color: red; font-weight: bold; }
+        .locked { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<h1>Gold Strategy Dashboard</h1>
+<p><b>Owner:</b> {{ owner }}</p>
+<p><b>Tier:</b> {{ tier }}</p>
+
+<p><b>Current Signal:</b>
+    <span class="{{ 'buy' if signal == 'BUY' else 'sell' }}">{{ signal }}</span>
+</p>
+
+<p><b>Price:</b> {{ price }}</p>
+
+{% if is_pro %}
+    <p><b>Confidence:</b> {{ confidence }}%</p>
+{% else %}
+    <p class="locked">Confidence (PRO only)</p>
+{% endif %}
+
+<p><b>Last Update:</b> {{ time }}</p>
+
+<h2>Recent Signals</h2>
+
+{% if is_pro %}
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Close</th>
+        <th>Signal</th>
+    </tr>
+
+    {% for row in history.itertuples() %}
+    <tr>
+        <td>{{ row.Index.date() }}</td>
+        <td>{{ "%.2f"|format(row.Close) }}</td>
+        <td class="{{ 'buy' if row.signal == 1 else 'sell' }}">
+            {{ 'BUY' if row.signal == 1 else 'SELL' }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="locked">Signal history available for PRO users</p>
+{% endif %}
+
+<p style="margin-top:20px; font-size:12px;">
+Educational use only. No financial advice. No trade execution.
+</p>
+
+</body>
+</html>

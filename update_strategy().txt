@@ -1,0 +1,40 @@
+def update_strategy():
+    while True:
+        try:
+            data = load_data()
+
+            # 🔒 SAFETY CHECK
+            if data is None or data.empty:
+                print("WAITING FOR DATA...")
+                time_module.sleep(30)
+                continue
+
+            data = run_strategy(data)
+
+            # 🔒 SAFETY CHECK
+            if data.empty:
+                print("STRATEGY RETURNED EMPTY DATA")
+                time_module.sleep(30)
+                continue
+
+            last = data.iloc[-1]
+
+            signal_value = int(last["signal"])
+            price_value = float(last["Close"])
+
+            latest_data["signal"] = "BUY" if signal_value == 1 else "SELL / CASH"
+            latest_data["price"] = round(price_value, 2)
+            latest_data["confidence"] = confidence_score(data)
+            latest_data["time"] = str(last.name)
+
+            print(
+                "LIVE UPDATE:",
+                latest_data["signal"],
+                latest_data["price"],
+                latest_data["confidence"]
+            )
+
+        except Exception as e:
+            print("ERROR:", e)
+
+        time_module.sleep(30)
