@@ -1,24 +1,18 @@
-import sqlite3
+from flask import Flask, jsonify
 
-DB_NAME = "users.db"
+app = Flask(__name__)
 
-def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    cur = conn.cursor()
+@app.route("/")
+def home():
+    return "Gold Strategy API is running"
 
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        tier TEXT DEFAULT 'FREE'
-    )
-    """)
+@app.route("/signal")
+def signal():
+    return jsonify({
+        "price": "2350.25",
+        "signal": "BUY",
+        "confidence": "78%"
+    })
 
-    # Ensure admin user exists
-    cur.execute("""
-    INSERT OR IGNORE INTO users (username, tier)
-    VALUES ('Justin', 'ADMIN')
-    """)
-
-    conn.commit()
-    conn.close()
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
